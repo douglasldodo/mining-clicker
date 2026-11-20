@@ -157,6 +157,48 @@ body{background:#21170f;color:#f7f0e4}body:before{display:none}
 @media(max-height:430px) and (orientation:landscape){#gameMain{padding:4px 7px;gap:4px 7px}#tb button{min-height:31px;padding:4px}.map button{min-height:44px;padding:4px}.mine-up-card{padding:4px}.mine-up-card b,.mine-up-card small{font-size:9px}}
 @media(max-width:600px) and (orientation:landscape){#gameMain{grid-template-columns:112px minmax(0,1fr)}#mine{grid-template-columns:100px minmax(0,1fr)}#hd .chip{padding:4px 6px;font-size:10px}.mine-up-card button{padding:3px;font-size:9px}}
 
+
+/* Minimal gameplay HUD: keep the ore as the focus */
+#gameMain{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:5px;padding:7px 10px}
+#hd{grid-column:1;grid-row:1;justify-content:center;align-items:center;overflow:visible;min-height:38px}
+#hd .chip{font-size:14px;padding:6px 12px;border-radius:8px}
+#tb{position:fixed;z-index:60;top:9px;left:9px;width:auto;overflow:visible;margin:0;padding:0}
+.game-menu{position:relative}
+.game-menu>summary,.resource-menu>summary{list-style:none;cursor:pointer;display:grid;place-items:center;min-width:42px;height:38px;padding:0 11px;border:1px solid #b18a58;border-radius:9px;background:linear-gradient(145deg,#6b5237,#302319);color:#ffedce;font-size:19px;font-weight:900;box-shadow:0 3px 10px #0008}
+.game-menu>summary::-webkit-details-marker,.resource-menu>summary::-webkit-details-marker,.mine-up-details>summary::-webkit-details-marker{display:none}
+.game-menu-list{position:absolute;top:46px;left:0;width:min(260px,75vw);max-height:72vh;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:9px;border:1px solid #9b7a55;border-radius:11px;background:#21180ff2;box-shadow:0 12px 30px #000b}
+.game-menu-list button{min-height:38px;padding:7px 8px;text-align:left;border:1px solid #725638;border-radius:7px;background:linear-gradient(#4a3828,#2a2018);color:#f8e9d1;font-size:12px}
+.game-menu-list button.on{background:linear-gradient(#f6cf79,#b77b30);color:#30200d}
+.resource-menu{position:relative}
+.resource-menu>summary{font-size:11px;min-width:0;height:32px;padding:0 9px}
+.resource-list{position:absolute;right:0;top:39px;z-index:65;display:grid;grid-template-columns:repeat(2,minmax(90px,1fr));gap:7px;min-width:200px;max-height:55vh;overflow:auto;padding:10px;border:1px solid #9b7a55;border-radius:9px;background:#21180ff2;color:#f6e8d0;box-shadow:0 10px 25px #000b}
+.resource-item{white-space:nowrap;font-size:12px}
+#mine,#p{grid-column:1;grid-row:2;min-width:0;min-height:0;padding:7px;background:#211b1590;border-color:#8a6b4d}
+#mine{grid-template-columns:minmax(115px,17%) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:7px}
+.map{grid-column:1;grid-row:1/4;display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden}
+.mine-select-label{font-size:10px;font-weight:900;letter-spacing:1px;color:#dfc49f}
+.mine-select{width:100%;min-width:0;padding:9px 7px;border-radius:8px;background:#34271c;color:#f8ebd6;border:1px solid #94734f;font-size:12px}
+#mineUpgrades{grid-column:2;grid-row:3;min-width:0}
+.mine-up-details>summary{list-style:none;cursor:pointer;width:max-content;max-width:100%;padding:7px 12px;border:1px solid #94734f;border-radius:8px;background:#332619e8;color:#ffe4b3;font-size:12px;font-weight:800}
+.mine-up-details[open]{background:#21180fdd;border:1px solid #856643;border-radius:9px;padding:6px}
+.mine-up-grid{margin-top:6px}
+#st{display:none}
+@media(max-width:600px) and (orientation:landscape){
+ #gameMain{grid-template-columns:minmax(0,1fr);grid-template-rows:38px minmax(0,1fr);padding:4px 7px}
+ #hd{justify-content:center}
+ #mine,#p{grid-column:1;grid-row:2}
+ #mine{grid-template-columns:105px minmax(0,1fr)}
+ #tb{top:4px;left:5px}
+ .game-menu>summary{height:32px;min-width:36px}
+ .game-menu-list{top:38px}
+ #hd .chip{font-size:12px;padding:4px 8px}
+}
+@media(max-height:430px) and (orientation:landscape){
+ #mine{grid-template-columns:105px minmax(0,1fr)}
+ .ore-core{height:min(48vh,300px)}
+ .mine-up-details>summary{padding:5px 9px}
+}
+
 </style>
 </head>
 <body>
@@ -191,7 +233,7 @@ let tab="mine",blocks=[],confirmRb=false,minionBlocks={};
 const MINE_UPS=[{k:"power",n:"Força",e:"⚒️",desc:"+15% dano nesta mina",base:80},{k:"yield",n:"Riqueza",e:"💰",desc:"+12% moedas nesta mina",base:120},{k:"auto",n:"Automática",e:"⚙️",desc:"+10% dano automático",base:180}];
 const mineLevel=(i,k)=>Number((S.mineUpgrades[i]||{})[k]||0),mineCost=(i,k)=>Math.ceil(MINE_UPS.find(x=>x.k===k).base*(1+i*.9)*Math.pow(1.62,mineLevel(i,k))),minePower=i=>1+mineLevel(i,"power")*.15,mineYield=i=>1+mineLevel(i,"yield")*.12,mineAuto=i=>1+mineLevel(i,"auto")*.10;
 function buyMineUpgrade(k){const i=S.zone,c=mineCost(i,k);if(S.coins<c)return toast("Moedas insuficientes");S.coins-=c;S.mineUpgrades[i]=S.mineUpgrades[i]||{};S.mineUpgrades[i][k]=mineLevel(i,k)+1;renderMineUpgrades();hdr();save()}
-function renderMineUpgrades(){const el=$("#mineUpgrades");if(!el)return;el.innerHTML='<div class="mine-up-title">⚒️ Melhorias exclusivas · '+ZONES[S.zone].n+'</div><div class="mine-up-grid">'+MINE_UPS.map(x=>{const lv=mineLevel(S.zone,x.k),c=mineCost(S.zone,x.k);return '<div class="mine-up-card"><b>'+x.e+' '+x.n+' · Nv. '+lv+'</b><small>'+x.desc+'</small><button '+(S.coins>=c?'':'disabled')+' onclick="buyMineUpgrade(\''+x.k+'\')">💰 '+fmt(c)+'</button></div>'}).join("")+'</div>'}
+function renderMineUpgrades(){const el=$("#mineUpgrades");if(!el)return;el.innerHTML='<details class="mine-up-details"><summary>⚒️ Melhorias da mina</summary><div class="mine-up-grid">'+MINE_UPS.map(x=>{const lv=mineLevel(S.zone,x.k),c=mineCost(S.zone,x.k);return '<div class="mine-up-card"><b>'+x.e+' '+x.n+' · Nv. '+lv+'</b><small>'+x.desc+'</small><button '+(S.coins>=c?'':'disabled')+' onclick="buyMineUpgrade(\''+x.k+'\')">💰 '+fmt(c)+'</button></div>'}).join("")+'</div></details>'}
 const petPower=k=>(PET[k]||0)*(1+(S.petLevels[k]||1)*.025+(S.petStars[k]||0)*.15);
 const petM=()=>1+Object.entries(S.pets).flatMap(([k,v])=>Array(v).fill(petPower(k))).sort((a,b)=>b-a).slice(0,3).reduce((a,b)=>a+b,0);
 const rbM=()=>1+.5*S.rb;
@@ -207,11 +249,10 @@ const upCost=k=>Math.ceil(UP[k].b*S.adm.up*Math.pow(UP[k].g,S.up[k])*Math.max(.7
 const rbCost=()=>250000*S.adm.rb*Math.pow(4,S.rb);
 const rpGain=()=>Math.max(1,Math.floor(Math.sqrt(S.coins/rbCost())));
 let tt;const toast=m=>{const t=$("#t");t.textContent=m;t.className="s";clearTimeout(tt);tt=setTimeout(()=>t.className="",1600)};
-function hdr(){$("#hd").innerHTML='<span class="chip coin">💰 '+fmt(S.coins)+'</span>'+Object.keys(MAT).filter(k=>S.mats[k]).map(k=>'<span class="chip">'+MAT[k]+" "+fmt(S.mats[k])+"</span>").join("")+(CFG.msg?'<span class="chip">📢 '+esc(CFG.msg)+'</span>':'')+(boss?'<span class="chip">👹 '+boss.t+'s</span>':'')+(autoLv()?'<span class="chip">👷 '+autoLv()+' minions</span>':'')+'<span class="chip">♻️ '+S.rb+'</span><span class="chip">🎟️ '+S.rp+"</span>";
-$("#st").textContent="Dano por clique: "+fmt(dmg())+" · Bônus de moedas: x"+coinM().toFixed(2)+" · Bônus de pets: x"+petM().toFixed(2)+" · Renascimento: x"+rbM().toFixed(1)+(autoLv()?" · Auto: "+fmt(autoLv()*dmg()*.25)+" dano/s":"")}
-function tabs(){$("#tb").innerHTML=[["mine","⛏️ Lobby"],["worlds","🌍 Mundos"],["forge","🔥 Forja"],["events","🎉 Eventos"],["skills","🌳 Skills"],["talents","⭐ Talentos"],["pick","🔨 Smith"],["shop","🛒 Shop"],["egg","🥚 Pets"],["missions","📜 Missões"],["progress","🗺️ Progresso"],["rb","♻️ Renascer"],["rank","🏆 Ranking"],...(OWNER?[["adm","🛠️ ADM"]]:[])].map(t=>'<button class="'+(tab==t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")}
-function go(t){tab=t;confirmRb=false;tabs();$("#mine").hidden=t!="mine";$("#p").hidden=t=="mine";if(t=="mine"){mapBar()}else P();hdr()}
-function mapBar(){$("#mp").innerHTML=ZONES.map((z,i)=>{const u=S.uz.includes(i);return '<button class="'+(S.zone==i?"on":"")+'" onclick="zone('+i+')">'+z.e+" "+z.n+"<small>"+(u?"Dropa "+MAT[z.m]+" "+z.m:"🔒 "+fmt(z.cost)+" moedas")+"</small></button>"}).join("")}
+function hdr(){const mats=Object.keys(MAT).filter(k=>S.mats[k]).map(k=>'<span class="resource-item">'+MAT[k]+' '+fmt(S.mats[k])+'</span>').join("");$("#hd").innerHTML='<span class="chip coin">💰 '+fmt(S.coins)+'</span><span class="chip tickets">🎟️ '+fmt(S.rp)+'</span><details class="resource-menu"><summary>Recursos</summary><div class="resource-list">'+(mats||'<span class="resource-item">Nenhum minério coletado</span>')+'</div></details>';$("#st").textContent=""}
+function tabs(){const items=[["mine","⛏️ Mineração"],["worlds","🌍 Mundos"],["forge","🔥 Forja"],["events","🎉 Eventos"],["skills","🌳 Skills"],["talents","⭐ Talentos"],["pick","🔨 Picaretas"],["shop","🛒 Loja"],["egg","🥚 Pets"],["missions","📜 Missões"],["progress","🗺️ Progresso"],["rb","♻️ Renascer"],["rank","🏆 Ranking"],...(OWNER?[["adm","🛠️ ADM"]]:[])];$("#tb").innerHTML='<details class="game-menu"><summary aria-label="Abrir menu">☰</summary><div class="game-menu-list">'+items.map(t=>'<button class="'+(tab==t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")+'</div></details>'}
+function go(t){tab=t;confirmRb=false;tabs();const menu=$("#tb details");if(menu)menu.open=false;$("#mine").hidden=t!="mine";$("#p").hidden=t=="mine";if(t=="mine"){mapBar()}else P();hdr()}
+function mapBar(){$("#mp").innerHTML='<label class="mine-select-label" for="mineSelect">MINA</label><select id="mineSelect" class="mine-select" onchange="zone(Number(this.value))">'+ZONES.map((z,i)=>'<option value="'+i+'" '+(S.zone==i?'selected':'')+'>'+z.e+' '+z.n+(S.uz.includes(i)?'':' · '+fmt(z.cost))+'</option>').join("")+'</select>'}
 function zone(i){if(!S.uz.includes(i)){if(S.coins<ZONES[i].cost)return toast("Faltam "+fmt(ZONES[i].cost-S.coins)+" moedas para abrir esta área");S.coins-=ZONES[i].cost;S.uz.push(i);toast(ZONES[i].n+" desbloqueada!")}S.zone=i;mapBar();build();renderMineUpgrades();hdr();save()}
 const spawn=()=>{const z=ZONES[S.zone];const m=z.hp*S.adm.hp*(.8+Math.random()*.4);return{hp:m,max:m}};
 function oreSVG(){const z=ZONES[S.zone],a=z.a||"#aab1b8",b=z.b||"#59616d";return '<svg viewBox="0 0 320 260" role="img" aria-label="Minério de '+z.n+'"><defs><linearGradient id="oreFace" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+a+'"/><stop offset=".48" stop-color="'+b+'"/><stop offset="1" stop-color="#111827"/></linearGradient><linearGradient id="oreGlow" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path d="M45 175 32 118 76 53 132 26 184 37 235 20 286 83 274 160 222 220 148 239 77 218Z" fill="#080d17" opacity=".7"/><path d="M42 169 34 112 80 48 135 30 182 46 228 29 278 83 268 155 222 207 148 230 78 210Z" fill="url(#oreFace)" stroke="#dce7f2" stroke-opacity=".28" stroke-width="4"/><path d="m80 48 55-18 47 16-30 65-75 8-43-7Z" fill="'+a+'" opacity=".72"/><path d="m177 46 51-17 50 54-61 28-65 0Z" fill="'+b+'" opacity=".9"/><path d="m34 112 43 7 37 70-36 21-56-41Z" fill="#111827" opacity=".55"/><path d="m112 189 56-78 65-28 45 72-56 52-74 23Z" fill="url(#oreFace)" opacity=".95"/><path d="m80 48 55-18 47 16-30 65-75 8-43-7Z" fill="url(#oreGlow)" opacity=".45"/><path d="m101 83 23-19 20 5-13 23-22 9Z" fill="#fff" opacity=".25"/><path d="m187 133 21-25 14 8-15 25Z" fill="'+a+'" opacity=".7"/><path d="m118 190 30-27 23 7-18 37-27 7Z" fill="'+b+'" opacity=".75"/><path d="m222 207 46-52-6 28-40 32-74 15Z" fill="#080d17" opacity=".35"/></svg>'}
