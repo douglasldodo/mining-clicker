@@ -52,6 +52,28 @@ input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid 
 .boss .bar{flex:1 1 100%;height:10px;background:var(--bd);border-radius:6px;overflow:hidden}
 .boss .bar i{display:block;height:100%;width:100%;background:var(--bad)}
 .boss button{margin-left:auto;touch-action:manipulation}
+
+:root{--gold:#f6b93b}
+body{background:radial-gradient(ellipse at 50% -15%,#344967 0,#182538 42%,#101827 100%);color:#f4f7fc}
+main{max-width:760px;padding:14px 14px 52px}
+h1{font-size:clamp(22px,5vw,30px);background:linear-gradient(90deg,#fff1bf,#f6b93b);-webkit-background-clip:text;background-clip:text;color:transparent;margin:8px 0 14px}
+.chip{background:#202d40;border:1px solid #3a4b64;color:#eaf1fc;padding:7px 11px}.chip.coin{background:#493717;border-color:#bd8625;color:#ffe3a0}
+.tabs{gap:7px;padding:4px 1px 9px;scrollbar-width:thin}.tabs button{flex:0 0 auto;background:#202d40;border:1px solid #3b4d66;color:#dce6f5;border-radius:12px;padding:10px 13px;font-weight:700}
+.tabs button.on,.tabs button.go{background:linear-gradient(135deg,#ffcf62,#e99a1a);border-color:#ffcf62;color:#30200a;box-shadow:0 4px 14px #e99a1a30}
+#mine,#p{background:#182438;border:1px solid #34465f;border-radius:18px;padding:12px;box-shadow:0 12px 32px #050b1450}
+.map button,.row,.f,.boss{background:#202e43;border-color:#3a4d67;color:#edf3fc;border-radius:13px}.map button.on{background:#73501c;border-color:#e7ac3d}.map button small,.row small{color:#b8c7db}
+.grid{border-radius:15px;padding:9px;gap:7px}.cell{border-radius:9px;background:#101a2a;border-color:#40516a}
+button{border-radius:10px;transition:transform .13s,border-color .13s}button:not(:disabled):active{transform:scale(.98)}
+.row{padding:13px;margin-bottom:9px;gap:12px}.pet{background:#1a2940;border-color:#40536f;border-radius:12px;padding:10px;color:#edf3fc}.pet.eq{background:#493717;border-color:#f6b93b}
+.f{padding:13px}input,select{background:#101a2a;border-color:#40516a;color:#f4f7fc}.boss{border-color:#e45a5a}
+#st{color:#b7c5d9!important;line-height:1.6}
+.panel-title{font-size:17px;font-weight:900;color:#ffe0a0;margin:5px 0 12px}
+.mission{background:linear-gradient(135deg,#263952,#1c2a3e);border:1px solid #425875;border-radius:14px;padding:13px;margin:9px 0}.mission.done{border-color:#4bbd82}
+.mission-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.mission-title{font-weight:800;color:#fff}.mission-desc{font-size:12px;color:#b8c7db;margin:6px 0 10px}
+.progress{height:9px;background:#101a2a;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,#48c987,#a3edaa);border-radius:99px}
+.notice-ready{padding:12px;border:1px solid #49bd83;background:#163d35;color:#c6ffe0;border-radius:12px;margin:8px 0 12px;font-weight:700}
+.chest-card{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#483719,#26344a);border:1px solid #bd8c35;border-radius:14px;padding:12px;margin:8px 0}.chest-icon{font-size:36px;filter:drop-shadow(0 4px 5px #0008)}.chest-card small{display:block;color:#d5c49f;margin-top:3px}
+@media(max-width:420px){main{padding:10px 9px 40px}.tabs button{padding:9px 11px;font-size:12px}.row{padding:10px}}
 </style>
 </head>
 <body>
@@ -76,9 +98,9 @@ const EGGS=[{n:"Ovo Comum",c:150,p:[["🐀 Rato",.1,60],["🦇 Morcego",.25,25],
 const PET={};EGGS.forEach(e=>e.p.forEach(p=>PET[p[0]]=p[1]));
 const UP={d:{n:"Dano da picareta",b:30,g:1.35,t:l=>"+2 de dano · nível "+l},c:{n:"Valor das moedas",b:60,g:1.4,t:l=>"+10% de moedas · nível "+l},a:{n:"Mineradores automáticos",b:200,g:1.45,t:l=>"Batem sozinhos 1x por segundo · nível "+l}};
 const RBU={d:["Dano +25%",1],c:["Moedas +25%",1],l:["Sorte nos ovos +10%",2],a:["Auto-mineração +2 níveis",2]};
-const fresh=()=>({coins:0,mats:{},tier:0,up:{d:0,c:0,a:0},zone:0,uz:[0],pets:{},rb:0,rp:0,rbu:{d:0,c:0,l:0,a:0},last:"",tot:0,rbn:0,nick:"",adm:{dm:1,cm:1,hp:1,ep:1,up:1,rb:1}});
+const fresh=()=>({coins:0,mats:{},tier:0,up:{d:0,c:0,a:0},zone:0,uz:[0],pets:{},rb:0,rp:0,rbu:{d:0,c:0,l:0,a:0},last:"",tot:0,rbn:0,nick:"",chests:0,missions:{mined:0,ores:0,coins:0,claimed:{}},adm:{dm:1,cm:1,hp:1,ep:1,up:1,rb:1}});
 let S=fresh();
-try{const r=localStorage.getItem("mcs_v1");if(r){const o=JSON.parse(r);S=Object.assign(fresh(),o);["up","rbu"].forEach(k=>S[k]=Object.assign(fresh()[k],S[k]));S.adm=fresh().adm}}catch(e){}
+try{const r=localStorage.getItem("mcs_v1");if(r){const o=JSON.parse(r);S=Object.assign(fresh(),o);["up","rbu"].forEach(k=>S[k]=Object.assign(fresh()[k],S[k]));S.missions=Object.assign(fresh().missions,S.missions||{});S.missions.claimed=Object.assign({},S.missions.claimed||{});S.chests=Math.max(0,S.chests||0);S.adm=fresh().adm}}catch(e){}
 const save=()=>{try{localStorage.setItem("mcs_v1",JSON.stringify(S))}catch(e){}};
 let tab="mine",blocks=[],confirmRb=false,minionBlocks={};
 const petM=()=>1+Object.entries(S.pets).flatMap(([k,v])=>Array(v).fill(PET[k])).sort((a,b)=>b-a).slice(0,3).reduce((a,b)=>a+b,0);
@@ -93,18 +115,19 @@ const rpGain=()=>Math.max(1,Math.floor(Math.sqrt(S.coins/rbCost())));
 let tt;const toast=m=>{const t=$("#t");t.textContent=m;t.className="s";clearTimeout(tt);tt=setTimeout(()=>t.className="",1600)};
 function hdr(){$("#hd").innerHTML='<span class="chip coin">💰 '+fmt(S.coins)+'</span>'+Object.keys(MAT).filter(k=>S.mats[k]).map(k=>'<span class="chip">'+MAT[k]+" "+fmt(S.mats[k])+"</span>").join("")+(CFG.msg?'<span class="chip">📢 '+esc(CFG.msg)+'</span>':'')+(boss?'<span class="chip">👹 '+boss.t+'s</span>':'')+(autoLv()?'<span class="chip">👷 '+autoLv()+' minions</span>':'')+'<span class="chip">♻️ '+S.rb+'</span><span class="chip">🎟️ '+S.rp+"</span>";
 $("#st").textContent="Dano por clique: "+fmt(dmg())+" · Bônus de moedas: x"+coinM().toFixed(2)+" · Bônus de pets: x"+petM().toFixed(2)+" · Renascimento: x"+rbM().toFixed(1)+(autoLv()?" · Auto: "+fmt(autoLv()*dmg()*.25)+" dano/s":"")}
-function tabs(){$("#tb").innerHTML=[["mine","⛏️ Mina"],["pick","🔨 Picareta"],["shop","🛒 Loja"],["egg","🥚 Ovos"],["rb","♻️ Renascer"],["rank","🏆 Ranking"],...(OWNER?[["adm","🛠️ ADM"]]:[])].map(t=>'<button class="'+(tab==t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")}
+function tabs(){$("#tb").innerHTML=[["mine","⛏️ Mina"],["pick","🔨 Picareta"],["shop","🛒 Loja"],["egg","🥚 Ovos"],["missions","📜 Missões"],["rb","♻️ Renascer"],["rank","🏆 Ranking"],...(OWNER?[["adm","🛠️ ADM"]]:[])].map(t=>'<button class="'+(tab==t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")}
 function go(t){tab=t;confirmRb=false;tabs();$("#mine").hidden=t!="mine";$("#p").hidden=t=="mine";if(t=="mine"){mapBar()}else P();hdr()}
 function mapBar(){$("#mp").innerHTML=ZONES.map((z,i)=>{const u=S.uz.includes(i);return '<button class="'+(S.zone==i?"on":"")+'" onclick="zone('+i+')">'+z.e+" "+z.n+"<small>"+(u?"Dropa "+MAT[z.m]+" "+z.m:"🔒 "+fmt(z.cost)+" moedas")+"</small></button>"}).join("")}
 function zone(i){if(!S.uz.includes(i)){if(S.coins<ZONES[i].cost)return toast("Faltam "+fmt(ZONES[i].cost-S.coins)+" moedas para abrir esta área");S.coins-=ZONES[i].cost;S.uz.push(i);toast(ZONES[i].n+" desbloqueada!")}S.zone=i;mapBar();build();hdr();save()}
 const spawn=()=>{const z=ZONES[S.zone];const m=z.hp*S.adm.hp*(.8+Math.random()*.4);return{hp:m,max:m}};
 function build(){const z=ZONES[S.zone];$("#gr").style.setProperty("--z",z.col);blocks=Array.from({length:30},spawn);$("#gr").innerHTML=blocks.map((b,i)=>'<button class="cell" aria-label="Bloco '+(i+1)+'" onclick="hit('+i+')">'+z.e+"<i></i></button>").join("")}
-function hit(i,d){d=d||dmg();const b=blocks[i],z=ZONES[S.zone];b.hp-=d;const c=$("#gr").children[i];if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);blocks[i]=spawn();c.lastChild.style.width="100%";hdr()}else c.lastChild.style.width=(b.hp/b.max*100)+"%"}
-function minionMine(){const d=autoLv()*dmg()*.25;if(!d)return;S.uz.forEach(i=>{const z=ZONES[i];let b=minionBlocks[i];if(!b){const hp=z.hp*S.adm.hp*(.8+Math.random()*.4);b=minionBlocks[i]={hp,max:hp}}b.hp-=d;if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);minionBlocks[i]=null}})}
+function hit(i,d){d=d||dmg();const b=blocks[i],z=ZONES[S.zone];b.hp-=d;const c=$("#gr").children[i];if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);missionProgress("mined",1);missionProgress("ores",1);missionProgress("coins",g);blocks[i]=spawn();c.lastChild.style.width="100%";hdr()}else c.lastChild.style.width=(b.hp/b.max*100)+"%"}
+function minionMine(){const d=autoLv()*dmg()*.25;if(!d)return;S.uz.forEach(i=>{const z=ZONES[i];let b=minionBlocks[i];if(!b){const hp=z.hp*S.adm.hp*(.8+Math.random()*.4);b=minionBlocks[i]={hp,max:hp}}b.hp-=d;if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);missionProgress("mined",1);missionProgress("ores",1);missionProgress("coins",g);minionBlocks[i]=null}})}
 function pay(c,m){if(S.coins<c)return false;for(const k in m)if((S.mats[k]||0)<m[k])return false;S.coins-=c;for(const k in m)S.mats[k]-=m[k];return true}
 function P(){const p=$("#p");let h="";
 if(tab=="pick"){const t=TIERS[S.tier],n=TIERS[S.tier+1];h+='<div class="row"><div><b>'+t.e+" Picareta de "+t.n+"</b><small>Dano base "+t.d+" · dano total por clique "+fmt(dmg())+"</small></div></div>";
-if(n){const ok=S.coins>=n.c&&Object.keys(n.m).every(k=>(S.mats[k]||0)>=n.m[k]);h+="<h2>Construir próxima picareta</h2><div class=\"row\"><div><b>"+n.e+" Picareta de "+n.n+"</b><small>Dano base "+n.d+"</small><small>Custa 💰 "+fmt(n.c)+"</small>"+Object.keys(n.m).map(k=>'<small class="'+((S.mats[k]||0)>=n.m[k]?"ok":"bad")+'">'+MAT[k]+" "+k+": "+fmt(S.mats[k]||0)+" / "+n.m[k]+"</small>").join("")+'</div><button class="go" '+(ok?"":"disabled")+' onclick="craft()">Construir</button></div>'}else h+="<p>Você tem a melhor picareta. Renasça para ficar ainda mais forte.</p>"}
+if(n){const ok=S.coins>=n.c&&Object.keys(n.m).every(k=>(S.mats[k]||0)>=n.m[k]);if(ok)h+='<div class="notice-ready">✨ Requisitos completos! Você já pode comprar a próxima picareta.</div>';h+="<h2>Construir próxima picareta</h2><div class=\"row\"><div><b>"+n.e+" Picareta de "+n.n+"</b><small>Dano base "+n.d+"</small><small>Custa 💰 "+fmt(n.c)+"</small>"+Object.keys(n.m).map(k=>'<small class="'+((S.mats[k]||0)>=n.m[k]?"ok":"bad")+'">'+MAT[k]+" "+k+": "+fmt(S.mats[k]||0)+" / "+n.m[k]+"</small>").join("")+'</div><button class="go" '+(ok?"":"disabled")+' onclick="craft()">Construir</button></div>'}else h+="<p>Você tem a melhor picareta. Renasça para ficar ainda mais forte.</p>"}
+if(tab=="missions")h+=missionsHtml();
 if(tab=="shop")h+=Object.keys(UP).map(k=>'<div class="row"><div><b>'+UP[k].n+"</b><small>"+UP[k].t(S.up[k])+'</small></div><button class="go" '+(S.coins>=upCost(k)?"":"disabled")+' onclick="buy(\''+k+'\')">💰 '+fmt(upCost(k))+"</button></div>").join("");
 if(tab=="egg"){h+=EGGS.map((e,i)=>'<div class="row"><div><b>🥚 '+e.n+"</b><small>"+e.p.map(x=>x[0]+" +"+Math.round(x[1]*100)+"%").join(" · ")+'</small></div><button class="go" '+(S.coins>=eggC(e)?"":"disabled")+' onclick="hatch('+i+')">💰 '+fmt(eggC(e))+"</button></div>").join("");
 if(S.last)h+='<p><b>Último chocado:</b> '+S.last+"</p>";
@@ -114,6 +137,15 @@ if(tab=="rb"){const ok=S.coins>=rbCost();h+='<div class="row"><div><b>♻️ Ren
 if(tab=="rank")h+=rankHtml();
 if(tab=="adm"&&OWNER)h+=admHtml();
 p.innerHTML=h}
+const MISSIONS=[
+{id:"mine",icon:"⛏️",name:"Mãos à obra",desc:"Quebre 30 blocos em qualquer mina.",goal:30,key:"mined",reward:1},
+{id:"ores",icon:"💎",name:"Coletor de minérios",desc:"Colete 40 minérios minerando.",goal:40,key:"ores",reward:1},
+{id:"coins",icon:"💰",name:"Fortuna subterrânea",desc:"Ganhe 2.500 moedas com mineração.",goal:2500,key:"coins",reward:2}
+];
+function missionProgress(k,n){if(!S.missions)S.missions=fresh().missions;S.missions[k]=(S.missions[k]||0)+n}
+function missionsHtml(){let h='<div class="panel-title">📜 Central de missões</div><p style="color:#b8c7db;font-size:12px">Complete objetivos para ganhar baús. Seu progresso fica salvo automaticamente.</p>';h+='<div class="chest-card"><div class="chest-icon">🎁</div><div style="flex:1"><b>Baús disponíveis: '+S.chests+'</b><small>Abra para receber moedas e minérios.</small><button class="go" '+(S.chests>0?'':'disabled')+' onclick="openChest()">Abrir baú</button></div></div>';h+=MISSIONS.map(m=>{const v=Math.min(m.goal,S.missions[m.key]||0),done=v>=m.goal,claimed=!!S.missions.claimed[m.id];return '<div class="mission '+(done?'done':'')+'"><div class="mission-top"><span class="mission-title">'+m.icon+' '+m.name+'</span><b>'+(claimed?'✅ Resgatada':done?'🏆 Concluída':'🎁 +'+m.reward+' baú(s)')+'</b></div><div class="mission-desc">'+m.desc+'</div><div class="progress"><i style="width:'+(v/m.goal*100)+'%"></i></div><div style="font-size:11px;color:#c6d3e5;margin-top:5px">'+fmt(v)+' / '+fmt(m.goal)+'</div>'+(done&&!claimed?'<button class="go" onclick="claimMission(\''+m.id+'\')">Coletar recompensa</button>':'')+'</div>'}).join('');return h}
+function claimMission(id){const m=MISSIONS.find(x=>x.id===id);if(!m||S.missions.claimed[id]||(S.missions[m.key]||0)<m.goal)return;S.missions.claimed[id]=true;S.chests+=m.reward;toast('🎁 Você recebeu '+m.reward+' baú(s)!');P();hdr();save()}
+function openChest(){if(S.chests<=0)return;S.chests--;const coin=Math.floor((150+Math.random()*350)*(1+S.rb*.2));S.coins+=coin;S.tot+=coin;const keys=Object.keys(MAT),mat=keys[Math.floor(Math.random()*keys.length)],qty=1+Math.floor(Math.random()*3);S.mats[mat]=(S.mats[mat]||0)+qty;toast('🎉 Baú aberto: +'+fmt(coin)+' moedas e '+qty+' '+MAT[mat]);P();hdr();save()}
 function craft(){const n=TIERS[S.tier+1];if(n&&pay(n.c,n.m)){S.tier++;toast("Você construiu a picareta de "+n.n+"!");P();hdr();save()}}
 function buy(k){const c=upCost(k);if(S.coins>=c){S.coins-=c;S.up[k]++;P();hdr();save()}}
 function hatch(i){const e=EGGS[i];if(S.coins<eggC(e))return;S.coins-=eggC(e);const w=e.p.map((x,j)=>x[2]*(1+.1*S.rbu.l*j)),T=w.reduce((a,b)=>a+b,0);let r=Math.random()*T,k=0;while(r>w[k]){r-=w[k];k++}const pet=e.p[k][0];S.pets[pet]=(S.pets[pet]||0)+1;S.last=pet+" (+"+Math.round(e.p[k][1]*100)+"%)";toast("Você chocou "+pet+"!");P();hdr();save()}
