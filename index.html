@@ -105,6 +105,29 @@ input,select{background:#101b2a;border-color:#70829a;border-radius:7px;color:#f5
 @media(max-width:480px){main{padding:9px 8px 58px}.ore-stage{min-height:330px}.ore-core{height:255px;width:min(82vw,320px)}.ore-label{font-size:12px;padding:7px 10px}.chip{padding:6px 8px;font-size:11px}.tabs button{padding:9px 10px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
+
+/* Mobile polish after device review */
+@media(max-width:600px){
+  main{width:100%;max-width:640px;min-width:0;padding-left:10px;padding-right:10px;overflow:hidden}
+  h1{font-size:clamp(25px,7vw,32px);line-height:1.05;max-width:100%;overflow-wrap:anywhere}
+  .chips{gap:6px}
+  .chip{flex:0 1 auto;min-width:0;padding:6px 8px;font-size:clamp(11px,3.3vw,14px);white-space:nowrap}
+  .tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding:3px 2px 11px;gap:7px}
+  .tabs button{flex:0 0 auto;min-height:54px;padding:9px 12px;font-size:14px}
+  .map{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding:3px 2px 11px;gap:9px}
+  .map button{flex:0 0 148px;min-width:148px;min-height:116px;padding:12px 10px;font-size:13px;line-height:1.25;white-space:normal}
+  .map button small{font-size:12px;line-height:1.25;margin-top:5px}
+  #mine,#p{min-width:0;padding:10px;border-radius:14px}
+  .ore-stage{min-height:clamp(300px,88vw,365px);padding:12px}
+  .ore-core{width:min(78vw,330px);height:clamp(230px,68vw,285px)}
+  .ore-label{max-width:calc(100% - 24px);white-space:normal;text-align:center;line-height:1.25}
+}
+@media(max-width:380px){
+  .chip{font-size:11px;padding:5px 6px}
+  .tabs button{font-size:13px;padding:8px 10px}
+  .map button{flex-basis:138px;min-width:138px}
+}
+
 </style>
 </head>
 <body>
