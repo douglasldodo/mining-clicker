@@ -73,6 +73,38 @@ button{border-radius:10px;transition:transform .13s,border-color .13s}button:not
 @media(max-width:420px){main{padding:10px 9px 40px}.tabs button{padding:9px 11px;font-size:12px}.row{padding:10px}}
 
 .pet-card{display:flex;align-items:center;gap:10px;padding:12px;margin:9px 0;border:1px solid var(--line);border-radius:14px;background:#111d30}.pet-avatar{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#334155,#111827);font-size:29px;border:2px solid #64748b;box-shadow:inset 0 2px 8px #fff2}.pet-avatar.stage-1{border-color:#34d399;filter:drop-shadow(0 0 5px #34d39988)}.pet-avatar.stage-2{border-color:#a78bfa;filter:drop-shadow(0 0 8px #a78bfa)}.pet-avatar.stage-3{border-color:#fbbf24;filter:drop-shadow(0 0 12px #fbbf24);animation:petGlow 2s infinite alternate}.pet-info{flex:1;min-width:0}.pet-info small{display:block;color:var(--mut);font-size:11px;margin-top:3px}.pet-card .go{padding:8px;font-size:11px;white-space:nowrap}@keyframes petGlow{to{box-shadow:0 0 18px #fbbf2488}}.muted{color:var(--mut);font-size:12px;line-height:1.5}
+
+/* Realistic fantasy mine atmosphere */
+:root{--gold:#f2bd58;--stone:#263344;--stone-edge:#65758a;--ink:#0a111b}
+body{background:radial-gradient(ellipse at 50% 0%,#52617a 0,#26364b 24%,#111c2b 62%,#080e17 100%);background-attachment:fixed;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.08px}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.2;background-image:radial-gradient(ellipse at 12% 18%,#b9c8d8 0 1px,transparent 2px),radial-gradient(ellipse at 76% 42%,#d2d9e2 0 1px,transparent 2px),radial-gradient(ellipse at 42% 82%,#a9b9cc 0 1px,transparent 2px);background-size:97px 113px,139px 151px,181px 167px}
+main{max-width:820px;padding:12px 13px 64px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(25px,6vw,34px);letter-spacing:.5px;text-shadow:0 3px 18px #e2a74b35;margin:9px 0 16px}
+.chips{gap:7px}.chip{background:linear-gradient(180deg,#34465c,#1a2839);border:1px solid #71839a;border-bottom-color:#27374b;border-radius:8px;box-shadow:inset 0 1px #ffffff18,0 3px 9px #0005;padding:7px 10px;font-size:12px}.chip.coin{background:linear-gradient(180deg,#765622,#3b2a13);border-color:#d8a64b;color:#ffedbd}
+.tabs{gap:6px;padding:5px 1px 11px}.tabs button{background:linear-gradient(180deg,#3b4b60,#202d40);border:1px solid #73839a;border-bottom:3px solid #101a29;color:#e9eff8;border-radius:8px;padding:10px 12px;box-shadow:inset 0 1px #ffffff20,0 3px 8px #0005;text-shadow:0 1px 2px #0008}.tabs button.on,.tabs button.go{background:linear-gradient(180deg,#ffe09a,#c58a32);border-color:#ffe5a9;border-bottom-color:#76501d;color:#2b1b08;box-shadow:inset 0 1px #fff9,0 4px 12px #0007}
+#mine,#p{background:linear-gradient(145deg,#26374c,#111d2d 72%);border:1px solid #718198;border-radius:15px;padding:11px;box-shadow:inset 0 1px #ffffff18,inset 0 -14px 30px #050b14a6,0 15px 38px #0008}
+.map{gap:7px;padding:2px 1px 10px}.map button{background:linear-gradient(180deg,#43536a,#243247);border:1px solid #71839a;border-bottom:3px solid #111c2b;border-radius:9px;box-shadow:inset 0 1px #ffffff20,0 3px 7px #0005}.map button.on{background:linear-gradient(180deg,#a87935,#59401f);border-color:#e6bd70;border-bottom-color:#2d2011}.map button small{color:#d0d9e6}.map button.on small{color:#fff0c8}
+.ore-stage{min-height:365px;margin:8px 0 10px;border:1px solid #8a9bb0;border-radius:12px;background:radial-gradient(ellipse at 50% 58%,color-mix(in srgb,var(--z,#526276) 38%,#35475b) 0,transparent 43%),radial-gradient(ellipse at 50% 100%,#8a6c48 0,#4c3b2d 22%,#202b38 55%,#101a28 100%);box-shadow:inset 0 0 0 4px #0a1420a6,inset 0 0 55px #000c,0 8px 22px #0008;isolation:isolate}
+.ore-stage:before{inset:auto -5% -3px;height:35%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#8b7254 0,#4a3d32 28%,#1b2734 78%);filter:blur(1px);opacity:.78;z-index:0}
+.ore-stage:after{content:"";position:absolute;z-index:0;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 15%,#f7d99b30,transparent 42%),linear-gradient(180deg,#060d18b0 0,transparent 25%,transparent 72%,#060d18a8 100%),repeating-linear-gradient(164deg,transparent 0 27px,#ffffff06 28px 29px,transparent 30px 57px);box-shadow:inset 0 20px 28px #050b17aa,inset 0 -24px 30px #050b17aa}
+.ore-label{top:13px;left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:88%;padding:8px 14px;border:1px solid #d9bd83;border-radius:7px;background:linear-gradient(180deg,#253449eF,#111b2beF);box-shadow:0 4px 13px #0009,inset 0 1px #ffffff24;color:#fff0c9;font-family:Georgia,serif;font-size:14px;letter-spacing:.3px}
+.ore-core{z-index:1;width:min(76vw,350px);height:285px;filter:drop-shadow(0 25px 13px #000c) drop-shadow(0 0 15px color-mix(in srgb,var(--z,#71839a) 35%,transparent));}
+.ore-core svg{overflow:visible;filter:saturate(1.12) contrast(1.08)}
+.ore-core:active,.ore-core.hit{filter:drop-shadow(0 11px 7px #000d) saturate(1.2)}
+.ore-hp{z-index:3;left:10%;right:10%;bottom:13px;height:14px;border:2px solid #9aabc0;background:#0b121d;box-shadow:0 3px 12px #000c,inset 0 1px 4px #000}
+.ore-hp i{background:linear-gradient(90deg,#a93d35,#e9a747 55%,#c9e58b);box-shadow:inset 0 1px #ffffff55}
+.ore-particle{z-index:4;text-shadow:0 2px 5px #000;filter:drop-shadow(0 0 5px #fff8)}
+#st{padding:9px 11px;border:1px solid #53677f;border-radius:8px;background:#0c1725a8;color:#d4deeb!important}
+.row,.f,.boss{background:linear-gradient(145deg,#34465c,#1d2b3e);border-color:#60748d;box-shadow:inset 0 1px #ffffff13,0 4px 12px #0003}
+.row{border-radius:10px}.row b,.panel-title{color:#ffe4ad}.row small{color:#c0cede}
+button{background:linear-gradient(180deg,#40536a,#26374c);border:1px solid #8293a8;border-bottom:3px solid #172436;border-radius:8px;color:#f2f5fa;box-shadow:inset 0 1px #ffffff22,0 3px 7px #0004}
+button.go{background:linear-gradient(180deg,#ffe09a,#c58a32);border-color:#ffe9b8;border-bottom-color:#76501d;color:#2d1d0b}
+input,select{background:#101b2a;border-color:#70829a;border-radius:7px;color:#f5f1e8}
+.pet,.pet-card,.mission,.chest-card{box-shadow:inset 0 1px #ffffff14,0 5px 14px #0004}
+.boss{background:linear-gradient(135deg,#4a2932,#222a3a);border-color:#bd6262}
+@media(max-width:480px){main{padding:9px 8px 58px}.ore-stage{min-height:330px}.ore-core{height:255px;width:min(82vw,320px)}.ore-label{font-size:12px;padding:7px 10px}.chip{padding:6px 8px;font-size:11px}.tabs button{padding:9px 10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
