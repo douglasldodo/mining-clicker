@@ -80,7 +80,7 @@ const fresh=()=>({coins:0,mats:{},tier:0,up:{d:0,c:0,a:0},zone:0,uz:[0],pets:{},
 let S=fresh();
 try{const r=localStorage.getItem("mcs_v1");if(r){const o=JSON.parse(r);S=Object.assign(fresh(),o);["up","rbu"].forEach(k=>S[k]=Object.assign(fresh()[k],S[k]));S.adm=fresh().adm}}catch(e){}
 const save=()=>{try{localStorage.setItem("mcs_v1",JSON.stringify(S))}catch(e){}};
-let tab="mine",blocks=[],confirmRb=false;
+let tab="mine",blocks=[],confirmRb=false,minionBlocks={};
 const petM=()=>1+Object.entries(S.pets).flatMap(([k,v])=>Array(v).fill(PET[k])).sort((a,b)=>b-a).slice(0,3).reduce((a,b)=>a+b,0);
 const rbM=()=>1+.5*S.rb;
 const dmg=()=>(TIERS[S.tier].d+S.up.d*2)*petM()*rbM()*(1+.25*S.rbu.d)*S.adm.dm;
@@ -100,7 +100,7 @@ function zone(i){if(!S.uz.includes(i)){if(S.coins<ZONES[i].cost)return toast("Fa
 const spawn=()=>{const z=ZONES[S.zone];const m=z.hp*S.adm.hp*(.8+Math.random()*.4);return{hp:m,max:m}};
 function build(){const z=ZONES[S.zone];$("#gr").style.setProperty("--z",z.col);blocks=Array.from({length:30},spawn);$("#gr").innerHTML=blocks.map((b,i)=>'<button class="cell" aria-label="Bloco '+(i+1)+'" onclick="hit('+i+')">'+z.e+"<i></i></button>").join("")}
 function hit(i,d){d=d||dmg();const b=blocks[i],z=ZONES[S.zone];b.hp-=d;const c=$("#gr").children[i];if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);blocks[i]=spawn();c.lastChild.style.width="100%";hdr()}else c.lastChild.style.width=(b.hp/b.max*100)+"%"}
-function pay(c,m){if(S.coins<c)return false;for(const k in m)if((S.mats[k]||0)<m[k])return false;S.coins-=c;for(const k in m)S.mats[k]-=m[k];return true}
+function minionMine(){const d=autoLv()*dmg()*.25;if(!d)return;S.uz.forEach(i=>{const z=ZONES[i];let b=minionBlocks[i];if(!b){const hp=z.hp*S.adm.hp*(.8+Math.random()*.4);b=minionBlocks[i]={hp,max:hp}}b.hp-=d;if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);minionBlocks[i]=null}})}\nfunction pay(c,m){if(S.coins<c)return false;for(const k in m)if((S.mats[k]||0)<m[k])return false;S.coins-=c;for(const k in m)S.mats[k]-=m[k];return true}
 function P(){const p=$("#p");let h="";
 if(tab=="pick"){const t=TIERS[S.tier],n=TIERS[S.tier+1];h+='<div class="row"><div><b>'+t.e+" Picareta de "+t.n+"</b><small>Dano base "+t.d+" · dano total por clique "+fmt(dmg())+"</small></div></div>";
 if(n){const ok=S.coins>=n.c&&Object.keys(n.m).every(k=>(S.mats[k]||0)>=n.m[k]);h+="<h2>Construir próxima picareta</h2><div class=\"row\"><div><b>"+n.e+" Picareta de "+n.n+"</b><small>Dano base "+n.d+"</small><small>Custa 💰 "+fmt(n.c)+"</small>"+Object.keys(n.m).map(k=>'<small class="'+((S.mats[k]||0)>=n.m[k]?"ok":"bad")+'">'+MAT[k]+" "+k+": "+fmt(S.mats[k]||0)+" / "+n.m[k]+"</small>").join("")+'</div><button class="go" '+(ok?"":"disabled")+' onclick="craft()">Construir</button></div>'}else h+="<p>Você tem a melhor picareta. Renasça para ficar ainda mais forte.</p>"}
@@ -118,7 +118,7 @@ function buy(k){const c=upCost(k);if(S.coins>=c){S.coins-=c;S.up[k]++;P();hdr();
 function hatch(i){const e=EGGS[i];if(S.coins<eggC(e))return;S.coins-=eggC(e);const w=e.p.map((x,j)=>x[2]*(1+.1*S.rbu.l*j)),T=w.reduce((a,b)=>a+b,0);let r=Math.random()*T,k=0;while(r>w[k]){r-=w[k];k++}const pet=e.p[k][0];S.pets[pet]=(S.pets[pet]||0)+1;S.last=pet+" (+"+Math.round(e.p[k][1]*100)+"%)";toast("Você chocou "+pet+"!");P();hdr();save()}
 function rebirth(){if(S.coins<rbCost())return;if(!confirmRb){confirmRb=true;P();return}const g=rpGain();const keep={pets:S.pets,rb:S.rb+1,rp:S.rp+g,rbu:S.rbu,last:S.last,adm:S.adm,tot:S.tot,rbn:S.rbn+1,nick:S.nick};S=Object.assign(fresh(),keep);boss=null;bossIn=60;bossUI();confirmRb=false;toast("Renascimento concluído! +"+g+" 🎟️");mapBar();build();P();hdr();save()}
 function rbuy(k,c){if(S.rp>=c){S.rp-=c;S.rbu[k]++;P();hdr();save()}}
-setInterval(()=>{if(autoLv()){const a=autoLv()*dmg()*.25;if(boss)hitBoss(a);else hit(Math.floor(Math.random()*30),a)}bossTick();hdr();if(["pick","shop","egg","rb"].includes(tab)){const s=aff()+(tab=="pick"?JSON.stringify(S.mats):"");if(s!=sig){sig=s;P()}}},1000);
+setInterval(()=>{if(autoLv()){const a=autoLv()*dmg()*.25;minionMine();if(boss)hitBoss(a)}bossTick();hdr();if(["pick","shop","egg","rb"].includes(tab)){const s=aff()+(tab=="pick"?JSON.stringify(S.mats):"");if(s!=sig){sig=s;P()}}},1000);
 let cw=false;
 const num=id=>{const v=parseFloat($("#"+id).value);return isFinite(v)?v:0};
 const opt=(a,sel)=>a.map(([v,t])=>'<option value="'+v+'"'+(v==sel?" selected":"")+">"+t+"</option>").join("");
