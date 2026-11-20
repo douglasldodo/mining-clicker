@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mining Clicker Simulator</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f131b">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#e6eaf0;--card:#fff;--tx:#1b2230;--mut:#5d687c;--ac:#d98a00;--acx:#fff;--bd:#c9d1de;--ok:#1f8f52;--bad:#c0392b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f131b;--card:#192030;--tx:#e9eef8;--mut:#93a0b8;--ac:#ffb62e;--acx:#1b1400;--bd:#2c3750;--ok:#46d283;--bad:#ff6b5b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f131b;--card:#192030;--tx:#e9eef8;--mut:#93a0b8;--ac:#ffb62e;--acx:#1b1400;--bd:#2c3750;--ok:#46d283;--bad:#ff6b5b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Verdana,Tahoma,"Segoe UI",sans-serif;font-size:14px;min-height:100%;-webkit-user-select:none;user-select:none}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+main{max-width:640px;margin:0 auto;padding:10px 12px 40px}
+h1{font-size:20px;margin:4px 0 8px;font-weight:800;letter-spacing:.2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.chip{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:4px 10px;font-weight:700}
+.chip.coin{border-color:var(--ac)}
+.tabs{display:flex;gap:4px;margin:8px 0;overflow-x:auto}
+.tabs button{flex:1;white-space:nowrap}
+button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--ac);outline-offset:1px}
+button.on,button.go{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+.map{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.map button{min-width:112px;text-align:left;font-size:12px}
+.map button small{display:block;color:var(--mut)}
+.map button.on small{color:var(--acx)}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px;padding:8px;border-radius:12px;background:var(--z);box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
+.cell{aspect-ratio:1;padding:0;position:relative;font-size:clamp(18px,6vw,30px);background:rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.18);overflow:hidden;touch-action:manipulation}
+.cell:active{transform:scale(.88)}
+.cell i{position:absolute;left:0;bottom:0;height:5px;width:100%;background:#59e08f}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:8px}
+.row small{color:var(--mut);display:block;margin-top:2px}
+.pets{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.pet{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:12px}
+.pet.eq{border-color:var(--ac);border-width:2px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+#t{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+#t.s{opacity:1}
+h2{font-size:15px;margin:12px 0 6px}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px;width:110px;-webkit-user-select:text;user-select:text}
+.f{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:8px}
+.f label{display:flex;flex-direction:column;font-size:11px;color:var(--mut);gap:2px}
+.boss{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:2px solid var(--bad);border-radius:10px;padding:8px 10px;margin-top:8px}
+.boss[hidden]{display:none}
+.boss .bar{flex:1 1 100%;height:10px;background:var(--bd);border-radius:6px;overflow:hidden}
+.boss .bar i{display:block;height:100%;width:100%;background:var(--bad)}
+.boss button{margin-left:auto;touch-action:manipulation}
+</style>
+</head>
+<body>
+<main>
+<h1>⛏️ Mining Clicker Simulator</h1>
+<div class="chips" id="hd"></div>
+<div class="tabs" id="tb"></div>
+<section id="mine"><div class="map" id="mp"></div><div class="boss" id="bs" hidden><b id="bn"></b><span id="bt"></span><button class="go" onclick="hitBoss()">⚔️ Atacar</button><div class="bar"><i id="bb"></i></div></div><div class="grid" id="gr"></div><p id="st" style="color:var(--mut);font-size:12px"></p></section>
+<section id="p" hidden></section>
+</main>
+<div id="t" role="status"></div>
+<script>
+const $=s=>document.querySelector(s);
+const fmt=n=>{if(n<1000)return Math.floor(n)+"";const u=["","K","M","B","T","Qa"];let i=0;while(n>=1000&&i<5){n/=1000;i++}return n.toFixed(n<10?2:1)+u[i]};
+const MAT={pedra:"🪨",ferro:"⛓️",ouro:"🥇",diamante:"💎",cristal:"🔮"};
+const TIERS=[{n:"Madeira",e:"🪵",d:1,c:0,m:{}},{n:"Pedra",e:"⛏️",d:4,c:100,m:{pedra:30}},{n:"Ferro",e:"⚒️",d:15,c:2000,m:{pedra:100,ferro:40}},{n:"Ouro",e:"🔱",d:60,c:30000,m:{ferro:150,ouro:50}},{n:"Diamante",e:"💠",d:250,c:4e5,m:{ouro:200,diamante:60}},{n:"Cristal",e:"🔮",d:1200,c:6e6,m:{diamante:250,cristal:80}}];
+const ZONES=[{n:"Caverna",e:"🪨",hp:8,coin:5,m:"pedra",cost:0,col:"#5d6573"},{n:"Mina de Ferro",e:"⛓️",hp:60,coin:25,m:"ferro",cost:500,col:"#8a5a3c"},{n:"Vulcão",e:"🌋",hp:400,coin:150,m:"ouro",cost:15000,col:"#a8760f"},{n:"Gruta de Diamantes",e:"💎",hp:3000,coin:1000,m:"diamante",cost:3e5,col:"#17808f"},{n:"Reino de Cristal",e:"🔮",hp:25000,coin:8000,m:"cristal",cost:5e6,col:"#6f3fb3"}];
+const EGGS=[{n:"Ovo Comum",c:150,p:[["🐀 Rato",.1,60],["🦇 Morcego",.25,25],["🐗 Javali",.5,12],["🐉 Dragãozinho",1.5,3]]},
+{n:"Ovo Raro",c:3000,p:[["🦔 Toupeira",.6,55],["🦉 Coruja",1.2,30],["🐺 Lobo",2.5,12],["🔥 Fênix",6,3]]},
+{n:"Ovo Épico",c:8e4,p:[["🗿 Golem",4,55],["🦅 Grifo",9,30],["🐍 Hidra",20,12],["🌋 Titã",50,3]]},
+{n:"Ovo Lendário",c:2e6,p:[["🐲 Wyvern",30,55],["🐕 Cérbero",70,30],["😇 Anjo",160,12],["👑 Rei Mineiro",400,3]]}];
+const PET={};EGGS.forEach(e=>e.p.forEach(p=>PET[p[0]]=p[1]));
+const UP={d:{n:"Dano da picareta",b:30,g:1.35,t:l=>"+2 de dano · nível "+l},c:{n:"Valor das moedas",b:60,g:1.4,t:l=>"+10% de moedas · nível "+l},a:{n:"Mineradores automáticos",b:200,g:1.45,t:l=>"Batem sozinhos 1x por segundo · nível "+l}};
+const RBU={d:["Dano +25%",1],c:["Moedas +25%",1],l:["Sorte nos ovos +10%",2],a:["Auto-mineração +2 níveis",2]};
+const fresh=()=>({coins:0,mats:{},tier:0,up:{d:0,c:0,a:0},zone:0,uz:[0],pets:{},rb:0,rp:0,rbu:{d:0,c:0,l:0,a:0},last:"",tot:0,rbn:0,nick:"",adm:{dm:1,cm:1,hp:1,ep:1,up:1,rb:1}});
+let S=fresh();
+try{const r=localStorage.getItem("mcs_v1");if(r){const o=JSON.parse(r);S=Object.assign(fresh(),o);["up","rbu"].forEach(k=>S[k]=Object.assign(fresh()[k],S[k]));S.adm=fresh().adm}}catch(e){}
+const save=()=>{try{localStorage.setItem("mcs_v1",JSON.stringify(S))}catch(e){}};
+let tab="mine",blocks=[],confirmRb=false;
+const petM=()=>1+Object.entries(S.pets).flatMap(([k,v])=>Array(v).fill(PET[k])).sort((a,b)=>b-a).slice(0,3).reduce((a,b)=>a+b,0);
+const rbM=()=>1+.5*S.rb;
+const dmg=()=>(TIERS[S.tier].d+S.up.d*2)*petM()*rbM()*(1+.25*S.rbu.d)*S.adm.dm;
+const coinM=()=>(1+.1*S.up.c)*petM()*rbM()*(1+.25*S.rbu.c)*S.adm.cm;
+const eggC=e=>Math.ceil(e.c*S.adm.ep);
+const autoLv=()=>S.up.a+S.rbu.a*2;
+const upCost=k=>Math.ceil(UP[k].b*S.adm.up*Math.pow(UP[k].g,S.up[k]));
+const rbCost=()=>250000*S.adm.rb*Math.pow(4,S.rb);
+const rpGain=()=>Math.max(1,Math.floor(Math.sqrt(S.coins/rbCost())));
+let tt;const toast=m=>{const t=$("#t");t.textContent=m;t.className="s";clearTimeout(tt);tt=setTimeout(()=>t.className="",1600)};
+function hdr(){$("#hd").innerHTML='<span class="chip coin">💰 '+fmt(S.coins)+'</span>'+Object.keys(MAT).filter(k=>S.mats[k]).map(k=>'<span class="chip">'+MAT[k]+" "+fmt(S.mats[k])+"</span>").join("")+(CFG.msg?'<span class="chip">📢 '+esc(CFG.msg)+'</span>':'')+(boss?'<span class="chip">👹 '+boss.t+'s</span>':'')+(autoLv()?'<span class="chip">👷 '+autoLv()+' minions</span>':'')+'<span class="chip">♻️ '+S.rb+'</span><span class="chip">🎟️ '+S.rp+"</span>";
+$("#st").textContent="Dano por clique: "+fmt(dmg())+" · Bônus de moedas: x"+coinM().toFixed(2)+" · Bônus de pets: x"+petM().toFixed(2)+" · Renascimento: x"+rbM().toFixed(1)+(autoLv()?" · Auto: "+fmt(autoLv()*dmg()*.25)+" dano/s":"")}
+function tabs(){$("#tb").innerHTML=[["mine","⛏️ Mina"],["pick","🔨 Picareta"],["shop","🛒 Loja"],["egg","🥚 Ovos"],["rb","♻️ Renascer"],["rank","🏆 Ranking"],...(OWNER?[["adm","🛠️ ADM"]]:[])].map(t=>'<button class="'+(tab==t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")}
+function go(t){tab=t;confirmRb=false;tabs();$("#mine").hidden=t!="mine";$("#p").hidden=t=="mine";if(t=="mine"){mapBar()}else P();hdr()}
+function mapBar(){$("#mp").innerHTML=ZONES.map((z,i)=>{const u=S.uz.includes(i);return '<button class="'+(S.zone==i?"on":"")+'" onclick="zone('+i+')">'+z.e+" "+z.n+"<small>"+(u?"Dropa "+MAT[z.m]+" "+z.m:"🔒 "+fmt(z.cost)+" moedas")+"</small></button>"}).join("")}
+function zone(i){if(!S.uz.includes(i)){if(S.coins<ZONES[i].cost)return toast("Faltam "+fmt(ZONES[i].cost-S.coins)+" moedas para abrir esta área");S.coins-=ZONES[i].cost;S.uz.push(i);toast(ZONES[i].n+" desbloqueada!")}S.zone=i;mapBar();build();hdr();save()}
+const spawn=()=>{const z=ZONES[S.zone];const m=z.hp*S.adm.hp*(.8+Math.random()*.4);return{hp:m,max:m}};
+function build(){const z=ZONES[S.zone];$("#gr").style.setProperty("--z",z.col);blocks=Array.from({length:30},spawn);$("#gr").innerHTML=blocks.map((b,i)=>'<button class="cell" aria-label="Bloco '+(i+1)+'" onclick="hit('+i+')">'+z.e+"<i></i></button>").join("")}
+function hit(i,d){d=d||dmg();const b=blocks[i],z=ZONES[S.zone];b.hp-=d;const c=$("#gr").children[i];if(b.hp<=0){const g=z.coin*coinM()*(.8+Math.random()*.4);S.coins+=g;S.tot+=g;S.mats[z.m]=(S.mats[z.m]||0)+1+(Math.random()<.5?1:0);blocks[i]=spawn();c.lastChild.style.width="100%";hdr()}else c.lastChild.style.width=(b.hp/b.max*100)+"%"}
+function pay(c,m){if(S.coins<c)return false;for(const k in m)if((S.mats[k]||0)<m[k])return false;S.coins-=c;for(const k in m)S.mats[k]-=m[k];return true}
+function P(){const p=$("#p");let h="";
+if(tab=="pick"){const t=TIERS[S.tier],n=TIERS[S.tier+1];h+='<div class="row"><div><b>'+t.e+" Picareta de "+t.n+"</b><small>Dano base "+t.d+" · dano total por clique "+fmt(dmg())+"</small></div></div>";
+if(n){const ok=S.coins>=n.c&&Object.keys(n.m).every(k=>(S.mats[k]||0)>=n.m[k]);h+="<h2>Construir próxima picareta</h2><div class=\"row\"><div><b>"+n.e+" Picareta de "+n.n+"</b><small>Dano base "+n.d+"</small><small>Custa 💰 "+fmt(n.c)+"</small>"+Object.keys(n.m).map(k=>'<small class="'+((S.mats[k]||0)>=n.m[k]?"ok":"bad")+'">'+MAT[k]+" "+k+": "+fmt(S.mats[k]||0)+" / "+n.m[k]+"</small>").join("")+'</div><button class="go" '+(ok?"":"disabled")+' onclick="craft()">Construir</button></div>'}else h+="<p>Você tem a melhor picareta. Renasça para ficar ainda mais forte.</p>"}
+if(tab=="shop")h+=Object.keys(UP).map(k=>'<div class="row"><div><b>'+UP[k].n+"</b><small>"+UP[k].t(S.up[k])+'</small></div><button class="go" '+(S.coins>=upCost(k)?"":"disabled")+' onclick="buy(\''+k+'\')">💰 '+fmt(upCost(k))+"</button></div>").join("");
+if(tab=="egg"){h+=EGGS.map((e,i)=>'<div class="row"><div><b>🥚 '+e.n+"</b><small>"+e.p.map(x=>x[0]+" +"+Math.round(x[1]*100)+"%").join(" · ")+'</small></div><button class="go" '+(S.coins>=eggC(e)?"":"disabled")+' onclick="hatch('+i+')">💰 '+fmt(eggC(e))+"</button></div>").join("");
+if(S.last)h+='<p><b>Último chocado:</b> '+S.last+"</p>";
+const eq=Object.entries(S.pets).flatMap(([k,v])=>Array(v).fill(k)).sort((a,b)=>PET[b]-PET[a]).slice(0,3);
+h+="<h2>Seus pets (os 3 melhores ficam equipados)</h2><div class=\"pets\">"+(Object.keys(S.pets).length?Object.entries(S.pets).sort((a,b)=>PET[b[0]]-PET[a[0]]).map(([k,v])=>'<div class="pet '+(eq.includes(k)?"eq":"")+'">'+k+" x"+v+"<br>+"+Math.round(PET[k]*100)+"%"+(eq.includes(k)?" ✔ equipado":"")+"</div>").join(""):"<p>Compre um ovo para ganhar seu primeiro pet.</p>")+"</div>"}
+if(tab=="rb"){const ok=S.coins>=rbCost();h+='<div class="row"><div><b>♻️ Renascimento '+(S.rb+1)+"</b><small>Custa 💰 "+fmt(rbCost())+" · você ganha 🎟️ "+rpGain()+" e +50% de dano e moedas para sempre</small><small>Reinicia moedas, materiais, picareta, melhorias e áreas. Mantém pets e bônus de renascimento.</small></div><button class=\"go\" "+(ok?"":"disabled")+' onclick="rebirth()">'+(confirmRb?"Confirmar":"Renascer")+"</button></div><h2>Loja de renascimento (🎟️ "+S.rp+")</h2>"+Object.keys(RBU).map(k=>{const c=Math.ceil(RBU[k][1]*Math.pow(1.6,S.rbu[k]));return '<div class="row"><div><b>'+RBU[k][0]+"</b><small>Nível "+S.rbu[k]+'</small></div><button class="go" '+(S.rp>=c?"":"disabled")+' onclick="rbuy(\''+k+'\','+c+')">🎟️ '+c+"</button></div>"}).join("")}
+if(tab=="rank")h+=rankHtml();
+if(tab=="adm"&&OWNER)h+=admHtml();
+p.innerHTML=h}
+function craft(){const n=TIERS[S.tier+1];if(n&&pay(n.c,n.m)){S.tier++;toast("Você construiu a picareta de "+n.n+"!");P();hdr();save()}}
+function buy(k){const c=upCost(k);if(S.coins>=c){S.coins-=c;S.up[k]++;P();hdr();save()}}
+function hatch(i){const e=EGGS[i];if(S.coins<eggC(e))return;S.coins-=eggC(e);const w=e.p.map((x,j)=>x[2]*(1+.1*S.rbu.l*j)),T=w.reduce((a,b)=>a+b,0);let r=Math.random()*T,k=0;while(r>w[k]){r-=w[k];k++}const pet=e.p[k][0];S.pets[pet]=(S.pets[pet]||0)+1;S.last=pet+" (+"+Math.round(e.p[k][1]*100)+"%)";toast("Você chocou "+pet+"!");P();hdr();save()}
+function rebirth(){if(S.coins<rbCost())return;if(!confirmRb){confirmRb=true;P();return}const g=rpGain();const keep={pets:S.pets,rb:S.rb+1,rp:S.rp+g,rbu:S.rbu,last:S.last,adm:S.adm,tot:S.tot,rbn:S.rbn+1,nick:S.nick};S=Object.assign(fresh(),keep);boss=null;bossIn=60;bossUI();confirmRb=false;toast("Renascimento concluído! +"+g+" 🎟️");mapBar();build();P();hdr();save()}
+function rbuy(k,c){if(S.rp>=c){S.rp-=c;S.rbu[k]++;P();hdr();save()}}
+setInterval(()=>{if(autoLv()){const a=autoLv()*dmg()*.25;if(boss)hitBoss(a);else hit(Math.floor(Math.random()*30),a)}bossTick();hdr();if(["pick","shop","egg","rb"].includes(tab)){const s=aff()+(tab=="pick"?JSON.stringify(S.mats):"");if(s!=sig){sig=s;P()}}},1000);
+let cw=false;
+const num=id=>{const v=parseFloat($("#"+id).value);return isFinite(v)?v:0};
+const opt=(a,sel)=>a.map(([v,t])=>'<option value="'+v+'"'+(v==sel?" selected":"")+">"+t+"</option>").join("");
+function admHtml(){const A=S.adm;
+let h='<h2>Recursos</h2><div class="f"><label>Recurso<select id="a_res">'+opt([["coins","💰 Moedas"],...Object.keys(MAT).map(k=>[k,MAT[k]+" "+k]),["rp","🎟️ Pontos de renascimento"],["rb","♻️ Renascimentos"]])+'</select></label><label>Quantidade<input id="a_amt" type="number" value="1000"></label><button class="go" onclick="admGive(0)">Dar</button><button onclick="admGive(1)">Definir</button></div>';
+h+='<h2>Picareta e melhorias</h2><div class="f"><label>Picareta<select id="a_tier">'+opt(TIERS.map((t,i)=>[i,t.e+" "+t.n]),S.tier)+'</select></label><button class="go" onclick="admTier()">Definir</button></div>';
+h+='<div class="f">'+[["d","Nível de dano"],["c","Nível de moedas"],["a","Nível auto"]].map(x=>'<label>'+x[1]+'<input id="a_u'+x[0]+'" type="number" value="'+S.up[x[0]]+'"></label>').join("")+'<button class="go" onclick="admUp()">Aplicar níveis</button></div>';
+h+='<h2>Áreas e pets</h2><div class="f"><button class="go" onclick="admBoss()">👹 Invocar chefe</button><button class="go" onclick="admZones()">Desbloquear todas as áreas</button></div><div class="f"><label>Pet<select id="a_pet">'+opt(Object.keys(PET).map((k,i)=>[i,k+" (+"+Math.round(PET[k]*100)+"%)"]),0)+'</select></label><label>Qtd<input id="a_pn" type="number" value="1"></label><button class="go" onclick="admPet()">Dar pet</button><button onclick="admPets0()">Limpar pets</button></div>';
+h+='<h2>Multiplicadores do jogo</h2><div class="f">'+[["dm","Dano x"],["cm","Moedas x"],["hp","Vida dos blocos x"],["ep","Preço dos ovos x"],["up","Preço das melhorias x"],["rb","Custo do renascimento x"]].map(x=>'<label>'+x[1]+'<input id="m_'+x[0]+'" type="number" step="any" value="'+A[x[0]]+'"></label>').join("")+'<label>Aviso aos jogadores<input id="m_msg" type="text" maxlength="120" style="width:260px" value="'+esc(CFG.msg||"")+'"></label><button class="go" onclick="admMul(0)">Publicar para todos</button><button onclick="admMul(1)">Resetar</button></div>';
+h+='<h2>Zona de perigo</h2><div class="f"><button onclick="admWipe()">'+(cw?"Confirmar: apagar tudo":"Apagar todo o progresso")+'</button></div>';
+return h}
+const done=()=>{P();hdr();save();toast("Aplicado")};
+function admGive(set){const r=$("#a_res").value,v=num("a_amt");if(r=="coins")S.coins=Math.max(0,set?v:S.coins+v);else if(r=="rp")S.rp=Math.max(0,set?v:S.rp+v);else if(r=="rb")S.rb=Math.max(0,Math.floor(set?v:S.rb+v));else S.mats[r]=Math.max(0,set?v:(S.mats[r]||0)+v);done()}
+function admTier(){S.tier=+$("#a_tier").value;done()}
+function admUp(){["d","c","a"].forEach(k=>S.up[k]=Math.max(0,Math.floor(num("a_u"+k))));done()}
+function admZones(){S.uz=ZONES.map((z,i)=>i);mapBar();done()}
+function admPet(){const n=Object.keys(PET)[+$("#a_pet").value];S.pets[n]=(S.pets[n]||0)+Math.max(1,Math.floor(num("a_pn")));done()}
+function admPets0(){S.pets={};done()}
+function admMul(r){const c={};Object.keys(S.adm).forEach(k=>c[k]=r?1:Math.max(.01,num("m_"+k)||1));c.msg=r?"":($("#m_msg").value||"").slice(0,120);pushCfg(c)}
+function admWipe(){if(!cw){cw=true;P();return}try{localStorage.removeItem("mcs_v1")}catch(e){}S=fresh();cw=false;mapBar();build();done()}
+let sig="";
+const aff=()=>[...Object.keys(UP).map(k=>S.coins>=upCost(k)),...EGGS.map(e=>S.coins>=eggC(e)),S.coins>=rbCost(),rpGain(),(()=>{const n=TIERS[S.tier+1];return !!n&&S.coins>=n.c&&Object.keys(n.m).every(k=>(S.mats[k]||0)>=n.m[k])})()].join();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let DB=null,UID=null,rank=[],rcrit="tot",rkErr="",lastPush="";
+const RKC={tot:["💰 Moedas totais",x=>x.tot||0],rbn:["♻️ Renascimentos",x=>x.rbn||0]};
+const rkDraw=()=>{if(tab=="rank"&&document.activeElement.id!="k_nick")P()};
+(async()=>{try{const d=await claude.use("db"),u=await claude.use("user");if(!d||!u)return;DB=d;UID=await u.id();OWNER=!!u.isOwner();tabs();DB.doc("config/game").onSnapshot(s=>applyCfg(s.exists?s.data():{}),()=>{});const to=setTimeout(()=>{rkErr="Não foi possível carregar o ranking agora.";rkDraw()},10000);DB.collection("ranking").orderBy("tot","desc").limit(100).onSnapshot(s=>{clearTimeout(to);rkErr="";rank=s.docs.map(x=>x.data());rkDraw()},e=>{clearTimeout(to);rkErr="Ranking indisponível.";rkDraw()});rkDraw()}catch(e){}})();
+function rankHtml(){let h='<h2>Seu perfil no ranking</h2><div class="f"><label>Apelido<input id="k_nick" maxlength="16" type="text" value="'+esc(S.nick)+'" style="width:150px"></label><button class="go" onclick="rkSave()">Salvar e enviar</button></div>';
+h+='<div class="tabs">'+Object.keys(RKC).map(k=>'<button class="'+(rcrit==k?"on":"")+'" onclick="rkCrit(\''+k+'\')">'+RKC[k][0]+"</button>").join("")+"</div>";
+if(!DB)return h+'<p>O ranking online não está disponível aqui. Seus números: 💰 '+fmt(S.tot)+" · ♻️ "+S.rbn+"</p>";
+const f=RKC[rcrit][1],L=[...rank].sort((a,b)=>f(b)-f(a)).slice(0,20);
+if(rkErr)h+='<p class="bad">'+rkErr+"</p>";
+return h+(L.length?L.map((x,i)=>'<div class="row" style="'+(x.uid==UID?"border-color:var(--ac);border-width:2px":"")+'"><div><b>'+(["🥇","🥈","🥉"][i]||"#"+(i+1))+" "+esc(x.nick||"Anônimo")+"</b><small>💰 "+fmt(x.tot||0)+" · ♻️ "+(x.rbn||0)+"</small></div><b>"+(rcrit=="tot"?fmt(f(x)):f(x))+"</b></div>").join(""):"<p>Ninguém no ranking ainda. Salve seu apelido para ser o primeiro.</p>")}
+async function push(force){if(!DB||!UID||!S.nick)return false;const k=Math.floor(S.tot)+"|"+S.rbn+"|"+S.nick;if(!force&&k==lastPush)return true;try{await DB.doc("ranking/"+UID).set({uid:UID,nick:S.nick,tot:Math.floor(S.tot),rbn:S.rbn,t:Date.now()});lastPush=k;return true}catch(e){return false}}
+async function rkSave(){S.nick=($("#k_nick").value||"").trim().slice(0,16);if(!S.nick)return toast("Digite um apelido");save();toast(await push(true)?"Ranking atualizado!":"Não foi possível enviar");P()}
+function rkCrit(k){rcrit=k;P()}
+const BN=["Golem de Pedra","Rei de Ferro","Dragão de Fogo","Colosso de Diamante","Titã de Cristal"];
+let boss=null,bossIn=60;
+function spawnBoss(){const z=S.zone,m=ZONES[z].hp*15*S.adm.hp;boss={z,hp:m,max:m,t:40};toast("👹 "+BN[z]+" apareceu!");bossUI()}
+function bossUI(){const b=$("#bs");b.hidden=!boss;if(!boss)return;$("#bn").textContent="👹 "+BN[boss.z];$("#bt").textContent=boss.t+"s · "+fmt(Math.max(0,boss.hp))+" / "+fmt(boss.max);$("#bb").style.width=Math.max(0,boss.hp/boss.max*100)+"%"}
+function rollEgg(i){const e=EGGS[i],w=e.p.map((x,j)=>x[2]*(1+.1*S.rbu.l*j)),T=w.reduce((a,b)=>a+b,0);let r=Math.random()*T,k=0;while(k<w.length-1&&r>w[k]){r-=w[k];k++}const p=e.p[k][0];S.pets[p]=(S.pets[p]||0)+1;S.last=p+" (+"+Math.round(e.p[k][1]*100)+"%)";return p}
+function hitBoss(d){if(!boss)return;boss.hp-=d||dmg();if(boss.hp<=0){const Z=ZONES[boss.z],g=Z.coin*60*coinM();S.coins+=g;S.tot+=g;S.mats[Z.m]=(S.mats[Z.m]||0)+10;let msg="Chefe derrotado! +"+fmt(g)+" moedas";if(Math.random()<.35)msg+=" e o pet "+rollEgg(Math.min(boss.z,3));toast(msg);boss=null;bossIn=90;hdr();save()}bossUI()}
+function bossTick(){if(boss){boss.t--;if(boss.t<=0){toast("O chefe fugiu!");boss=null;bossIn=90}}else if(--bossIn<=0)spawnBoss();bossUI()}
+function admBoss(){if(!boss)spawnBoss();toast("Chefe invocado")}
+let OWNER=false,CFG={};
+const applyCfg=c=>{CFG=c||{};Object.keys(fresh().adm).forEach(k=>S.adm[k]=Number(CFG[k])>0?Number(CFG[k]):1);hdr()};
+async function pushCfg(c){if(!DB)return toast("Sem banco de dados aqui");try{await DB.doc("config/game").set(c);toast("Publicado para todos os jogadores")}catch(e){toast("Sem permissão para publicar")}}
+const loadCfg=()=>{if(!DB)fetch("config.json",{cache:"no-store"}).then(r=>r.json()).then(applyCfg).catch(()=>{})};
+setTimeout(loadCfg,3000);setInterval(loadCfg,300000);
+setInterval(()=>push(false),20000);
+setInterval(save,5000);
+tabs();mapBar();build();hdr();
+</script>
+<script>if("serviceWorker" in navigator&&location.protocol.indexOf("http")==0)navigator.serviceWorker.register("sw.js").catch(()=>{});</script>
+</body>
+</html>
